@@ -1,4 +1,4 @@
-package com.carRental.carRental;
+package com.H4ckint0sh.carRental;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
