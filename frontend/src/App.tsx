@@ -1,21 +1,30 @@
 import axios from "axios";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./layouts/Layout";
+import Admin from "./pages/Admin";
+import Booking from "./pages/Booking";
 
 function App() {
-  const getHelloWorld = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/api/cars");
-      console.log(response);
-    } catch (error) {
-      console.error("There was a problem with the fetch operation:", error);
-    }
-  };
+  // const getHelloWorld = async () => {
+  //   try {
+  //     const response = await axios.get("http://localhost:8080/api/cars");
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.error("There was a problem with the fetch operation:", error);
+  //   }
+  // };
+  //
+  // getHelloWorld();
 
-  getHelloWorld();
   return (
-    <div className="flex justify-center items-center h-screen">
-      <h1 className="text-3xl font-bold underline">Welcome to Car Rental</h1>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Booking />} />
+          <Route path="/admin" element={<Admin />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
