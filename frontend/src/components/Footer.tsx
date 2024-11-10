@@ -28,7 +28,7 @@ const Footer = (props: {}) => {
       <div className="border-b border-gray-100"></div>
       <div className="container px-4 mx-auto">
         <p className="py-6 text-md text-gray-500 font-medium">
-          © 2024 H4ckint0sh. All rights reserved.
+          © 2024 h4ckint0sh. All rights reserved.
         </p>
       </div>
     </footer>
