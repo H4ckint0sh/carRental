@@ -9,13 +9,14 @@ import java.util.Optional;
 @Setter
 @Getter
 @Entity
-@Table(name="rental")
+@Table(name="rentalcar")
 public class Car {
     @Id
     private int id;
     private String name;
     private int price;
     private boolean rented;
+    private String rentedBy;
 
     @Column(name = "rented_from")
     private LocalDate rentedFrom;
@@ -29,6 +30,7 @@ public class Car {
         this.name = name;
         this.price = price;
         this.rented = false;
+        this.rentedBy = null;
         this.rentedFrom = null;
         this.rentedTo = null;
     }
