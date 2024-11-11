@@ -2,6 +2,7 @@ import axios from "axios";
 import BookingForm from "../components/BookingForm";
 
 const BookingPage = (props: {}) => {
+  // const [rentalCars, setRentalCars] = useState<RentalCar[]>([]);
   const getHelloWorld = async () => {
     try {
       const response = await axios.get("http://localhost:8080/api/cars");
