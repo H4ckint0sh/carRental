@@ -9,7 +9,7 @@ import java.util.Optional;
 @Setter
 @Getter
 @Entity
-@Table(name="rentalcar")
+@Table(name="rentalCar")
 public class Car {
     @Id
     private int id;

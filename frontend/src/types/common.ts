@@ -12,7 +12,8 @@ export interface RentalCar {
 export interface RentalCarFormData {
   vehicle: string;
   driversName: string;
-  driversAge: number;
-  price: number;
-  dateRange: Date[];
+  driversAge: number | null;
+  price: number | null;
+  fromDate: string;
+  toDate: string;
 }

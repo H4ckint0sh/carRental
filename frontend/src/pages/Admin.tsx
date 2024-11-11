@@ -1,5 +1,11 @@
+import AdminTable from "../components/AdminTable";
+
 const Admin = (props: {}) => {
-  return <div>Admin Page</div>;
+  return (
+    <div>
+      <AdminTable />
+    </div>
+  );
 };
 
 export default Admin;

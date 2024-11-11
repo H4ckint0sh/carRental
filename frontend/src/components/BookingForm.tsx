@@ -1,46 +1,76 @@
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import DatePicker from "react-datepicker";
+import { useForm } from "react-hook-form";
 import { ErrorMessage } from "./ErrrorMessage";
 import { RentalCarFormData } from "../types/common";
+import Toast from "./ToastMessage";
 
-const BookingForm = (props: {}) => {
-  const [dateRange, setDateRange] = useState<Array<Date | any>>([]);
-  const [startDate, endDate] = dateRange;
+const BookingForm = () => {
+  const [toast, setToast] = useState<{
+    severity: string;
+    message: string;
+  } | null>(null);
+  const showToast = (severity: string, message: string) => {
+    setToast({ severity, message });
+  };
   const {
     register,
     handleSubmit,
-    control,
+    reset,
     setValue,
-    formState: { errors, isValid },
+    getValues,
+    clearErrors,
+    watch,
+    formState: { errors },
   } = useForm<RentalCarFormData>({
     mode: "onSubmit",
+    reValidateMode: "onSubmit",
     defaultValues: {
       vehicle: "",
       driversName: "",
-      dateRange: [],
-      driversAge: undefined,
-      price: undefined,
+      toDate: "",
+      fromDate: "",
+      driversAge: null,
+      price: null,
     },
   });
 
   useEffect(() => {
-    // Calculate price if both startDate and endDate are selected
+    // Watch for changes in date fields
+    const startDate = watch("fromDate");
+    const endDate = watch("toDate");
+
     if (startDate && endDate) {
-      const diffInTime = endDate.getTime() - startDate.getTime();
-      const diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24));
-      const calculatedPrice = diffInDays * 300;
+      // Convert the string dates to Date objects
+      const start = new Date(startDate);
+      const end = new Date(endDate);
 
-      // Update the price field in the form
-      setValue("price", calculatedPrice);
-    } else {
-      // Reset price if date range is incomplete
-      setValue("price", 0);
+      // Check if start and end are valid dates
+      if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+        const diffInTime = end.getTime() - start.getTime();
+        const diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24));
+        const calculatedPrice = diffInDays * 300;
+
+        // Update the price field in the form
+        setValue("price", calculatedPrice);
+      }
     }
-  }, [startDate, endDate, setValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch("fromDate"), watch("toDate")]);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: RentalCarFormData) => {
     console.log(data);
+
+    // Reset form after submit
+    reset({
+      vehicle: "",
+      driversName: "",
+      toDate: "",
+      fromDate: "",
+      driversAge: null,
+      price: null,
+    });
+    clearErrors(); // Clear errors after submit
+    showToast("success", "Booking Successful");
   };
 
   useEffect(() => {
@@ -49,6 +79,12 @@ const BookingForm = (props: {}) => {
 
   return (
     <div className="flex flex-col items-center justify-center my-10">
+      {toast && (
+        <Toast
+          severity={toast.severity as "success" | "error" | "warning" | "info"}
+          message={toast.message}
+        />
+      )}
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Booking Form</h2>
         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
@@ -76,38 +112,6 @@ const BookingForm = (props: {}) => {
 
           <label
             className="text-sm mb-2 text-gray-900 cursor-pointer"
-            htmlFor="dateRange"
-          >
-            Date Range
-          </label>
-          <Controller
-            control={control}
-            name="dateRange"
-            rules={{ required: "Please select a date range." }}
-            render={({ field }) => (
-              <DatePicker
-                selectsRange
-                placeholderText="Select date range (start date and end date)"
-                id="dateRange"
-                minDate={new Date()}
-                startDate={startDate}
-                endDate={endDate}
-                onChange={(e) => {
-                  setDateRange(e);
-                  field.onChange(e);
-                }}
-                className={`bg-gray-100 w-full text-gray-900 border rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 ${
-                  errors.dateRange ? "border-red-500" : "border-gray-200"
-                }`}
-                isClearable
-              />
-            )}
-          />
-          {errors?.dateRange?.message && (
-            <ErrorMessage message={errors.dateRange.message} severity="error" />
-          )}
-          <label
-            className="text-sm mb-2 text-gray-900 cursor-pointer"
             htmlFor="driversName"
           >
             Driver's Name
@@ -132,6 +136,56 @@ const BookingForm = (props: {}) => {
               message={errors.driversName.message}
               severity="error"
             />
+          )}
+
+          <label
+            className="text-sm mb-2 text-gray-900 cursor-pointer"
+            htmlFor="fromDate"
+          >
+            From Date
+          </label>
+          <input
+            placeholder="The date you want to rent from"
+            className={`bg-gray-100 text-gray-900 border rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+              errors.driversName ? "border-red-500" : "border-gray-200"
+            }`}
+            id="driversAge"
+            {...register("fromDate", {
+              required: "Please enter a from date.",
+              min: { value: 18, message: "Must be at least 18 years old." },
+            })}
+            type="date"
+            min={new Date().toISOString().split("T")[0]}
+          />
+          {errors?.fromDate?.message && (
+            <ErrorMessage message={errors.fromDate.message} severity="error" />
+          )}
+
+          <label
+            className="text-sm mb-2 text-gray-900 cursor-pointer"
+            htmlFor="toDate"
+          >
+            To Date
+          </label>
+          <input
+            placeholder="The date you want to rent from"
+            className={`bg-gray-100 text-gray-900 border rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+              errors.driversName ? "border-red-500" : "border-gray-200"
+            }`}
+            id="toDate"
+            {...register("toDate", {
+              required: "Please enter a from date.",
+              min: { value: 18, message: "Must be at least 18 years old." },
+            })}
+            type="date"
+            min={
+              getValues("fromDate")
+                ? (getValues("fromDate") as string)
+                : new Date().toISOString().split("T")[0]
+            }
+          />
+          {errors?.toDate?.message && (
+            <ErrorMessage message={errors.toDate.message} severity="error" />
           )}
 
           <label
