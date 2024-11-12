@@ -1,43 +1,60 @@
 import React from "react";
+import { FieldError, UseFormRegisterReturn } from "react-hook-form";
+import { ErrorMessage } from "./ErrrorMessage";
+import clsx from "clsx";
 
-interface CustomInputProps {
+interface InputProps {
+  id: string;
   label: string;
-  name: string;
-  value?: number | string;
-  placeholder?: string;
+  placeholder: string;
+  type?: string;
+  error?: FieldError;
+  register: UseFormRegisterReturn;
+  className?: string;
   disabled?: boolean;
-  type?: "text" | "number" | "email" | "password" | "date";
+  min?: string | number;
+  onBlur?: () => void;
 }
 
-const useCustomInput = ({
+const Input: React.FC<InputProps> = ({
+  id,
   label,
-  name,
-  value = "",
-  placeholder = "",
-  disabled = false,
+  placeholder,
   type = "text",
-}: CustomInputProps) => {
-  return (
-    <div className="flex flex-col">
+  error,
+  register,
+  className = "",
+  disabled = false,
+  min,
+}) => (
+  <>
+    <div
+      className={clsx(
+        "flex text-sm flex-col",
+        error ? "mb-2" : label === "Price" ? "mb-0" : "mb-6",
+      )}
+    >
       <label
-        className="text-sm mb-2 text-gray-900 cursor-pointer"
-        htmlFor={name}
+        htmlFor={id}
+        className={clsx(
+          "text-sm font-medium text-gray-900 cursor-pointer",
+          error ? "mb-2" : label === "Price" ? "mb-0" : "mb-4",
+        )}
       >
-        {label}
+        {label} {label !== "Price" && <span className="text-red-500">*</span>}
       </label>
       <input
-        className="bg-gray-100 text-gray-900 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
-        id={name}
-        name={name}
+        id={id}
         placeholder={placeholder}
         type={type}
-        value={value}
+        className={`bg-gray-100 text-gray-900 border rounded-lg p-2 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${error ? "border-red-500" : "border-gray-200"} ${className}`}
+        {...register}
         disabled={disabled}
+        min={min}
       />
     </div>
-  );
-};
+    {error && <ErrorMessage message={error.message!} severity="error" />}
+  </>
+);
 
-export const CustomInputField: React.FC<CustomInputProps> = (props) => {
-  return <>{useCustomInput(props)}</>;
-};
+export default Input;

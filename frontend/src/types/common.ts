@@ -18,6 +18,6 @@ export interface Booking {
   bookingPrice: number;
   carId: number;
   bookedBy: string;
-  bookedFrom: Date;
-  bookedTo: Date;
+  bookedFrom: string;
+  bookedTo: string;
 }
