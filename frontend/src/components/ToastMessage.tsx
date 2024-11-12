@@ -9,7 +9,6 @@ const Toast: React.FC<ToastProps> = ({ severity, message }) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    console.log("here", visible);
     const timer = setTimeout(() => setVisible(false), 6000); // Hide toast after 3 seconds
     return () => clearTimeout(timer); // Clean up the timer on unmount
   }, [visible]);

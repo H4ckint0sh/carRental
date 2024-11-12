@@ -6,5 +6,5 @@ export function findCarById(
   selectedCarId: number,
 ): RentalCar | undefined {
   const id = Math.trunc(selectedCarId); // Ensure selectedCarId is an integer
-  return cars.find((car) => car.id === id);
+  return cars.find((car) => car.carId === id);
 }

@@ -1,0 +1,22 @@
+[
+  {
+    "carId": 1,
+    "carName": "Volvo S60",
+    "pricePerDay": 1500
+  },
+  {
+    "carId": 2,
+    "carName": "Wolkswagon Golf",
+    "pricePerDay": 1333
+  },
+  {
+    "carId": 3,
+    "carName": "Ford Mustang",
+    "pricePerDay": 3000
+  },
+  {
+    "carId": 4,
+    "carName": "Ford Trasnsporter",
+    "pricePerDay": 2400
+  }
+]
