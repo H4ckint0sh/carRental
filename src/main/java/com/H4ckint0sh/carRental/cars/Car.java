@@ -12,23 +12,15 @@ import java.util.Optional;
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
-    private int price;
-    private boolean rented;
-    private String rentedBy;
-    private String rentedFrom;
-    private String rentedTo;
+    private Long carId;
+    private String carName;
+    private int pricePerDay;
 
     public Car() {}
 
-    public Car(String name, int price, boolean rented, String rentedBy, String rentedFrom, String rentedTo) {
-        this.name = name;
-        this.price = price;
-        this.rented = rented;
-        this.rentedBy = rentedBy;
-        this.rentedFrom = rentedFrom;
-        this.rentedTo = rentedTo;
+    public Car(String name, int price) {
+        this.carName = name;
+        this.pricePerDay = price;
     }
 
     public static Optional<Car> map(Object object) {
