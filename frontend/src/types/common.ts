@@ -1,6 +1,6 @@
 export interface RentalCar {
-  id: string;
-  vehicle: string;
+  id: number;
+  name: string;
   driversName: string;
   driversAge: number;
   price: number;
@@ -10,7 +10,7 @@ export interface RentalCar {
 }
 
 export interface RentalCarFormData {
-  vehicle: string;
+  vehicle: number | null;
   driversName: string;
   driversAge: number | null;
   price: number | null;

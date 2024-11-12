@@ -3,36 +3,32 @@ package com.H4ckint0sh.carRental.cars;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Setter
 @Getter
 @Entity
-@Table(name="rentalCar")
+@Table(name="car")
 public class Car {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private int price;
     private boolean rented;
     private String rentedBy;
-
-    @Column(name = "rented_from")
-    private LocalDate rentedFrom;
-
-    @Column(name = "rented_to")
-    private LocalDate rentedTo;
+    private String rentedFrom;
+    private String rentedTo;
 
     public Car() {}
 
-    public Car(String name, int price) {
+    public Car(String name, int price, boolean rented, String rentedBy, String rentedFrom, String rentedTo) {
         this.name = name;
         this.price = price;
-        this.rented = false;
-        this.rentedBy = null;
-        this.rentedFrom = null;
-        this.rentedTo = null;
+        this.rented = rented;
+        this.rentedBy = rentedBy;
+        this.rentedFrom = rentedFrom;
+        this.rentedTo = rentedTo;
     }
 
     public static Optional<Car> map(Object object) {

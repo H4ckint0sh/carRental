@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "./ErrrorMessage";
-import { RentalCarFormData } from "../types/common";
-import Toast from "./ToastMessage";
+import { RentalCar, RentalCarFormData } from "../types/common";
+import { useToastContext } from "../context/ToastContext";
+import usePriceCalculation from "../hooks/usePriceCalculation";
+import { findCarById } from "../utils/utilis";
+import axios from "axios";
 
-const BookingForm = () => {
-  const [toast, setToast] = useState<{
-    severity: string;
-    message: string;
-  } | null>(null);
-  const showToast = (severity: string, message: string) => {
-    setToast({ severity, message });
-  };
+interface BookingFormProps {
+  rentalCars: RentalCar[];
+}
+
+const BookingForm: React.FC<BookingFormProps> = ({ rentalCars }) => {
+  const { showToast } = useToastContext();
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
+
+  console.log("rentalCars", rentalCars);
+
   const {
     register,
     handleSubmit,
@@ -23,9 +30,9 @@ const BookingForm = () => {
     formState: { errors },
   } = useForm<RentalCarFormData>({
     mode: "onSubmit",
-    reValidateMode: "onSubmit",
+    reValidateMode: "onChange",
     defaultValues: {
-      vehicle: "",
+      vehicle: null,
       driversName: "",
       toDate: "",
       fromDate: "",
@@ -35,34 +42,50 @@ const BookingForm = () => {
   });
 
   useEffect(() => {
-    // Watch for changes in date fields
-    const startDate = watch("fromDate");
-    const endDate = watch("toDate");
-
-    if (startDate && endDate) {
-      // Convert the string dates to Date objects
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-
-      // Check if start and end are valid dates
-      if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
-        const diffInTime = end.getTime() - start.getTime();
-        const diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24));
-        const calculatedPrice = diffInDays * 300;
-
-        // Update the price field in the form
-        setValue("price", calculatedPrice);
-      }
+    if (watch("fromDate") && watch("toDate")) {
+      setStartDate(watch("fromDate"));
+      setEndDate(watch("toDate"));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch("fromDate"), watch("toDate")]);
+    if (watch("vehicle")) {
+      setSelectedCarId(watch("vehicle"));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps, no-sparse-arrays
+  }, [, watch("fromDate"), watch("toDate"), watch("vehicle")]);
 
-  const onSubmit = (data: RentalCarFormData) => {
-    console.log(data);
+  const calculatedPrice = usePriceCalculation({
+    startDate,
+    endDate,
+    // @ts-ignore
+    pricePerDay: findCarById(rentalCars, selectedCarId)?.price || 0,
+  });
+
+  useEffect(() => {
+    setValue("price", calculatedPrice);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calculatedPrice]);
+
+  const onSubmit = async (data: RentalCarFormData) => {
+    console.log("data", data);
+    try {
+      const response = await axios.patch(
+        `http://localhost:8080/api/cars/${data.vehicle}`,
+        {
+          rented: true,
+          rentedBy: data.driversName,
+          rentedFrom: data.fromDate,
+          rentedTo: data.toDate,
+        },
+      );
+      if (response.status === 200) {
+        showToast("success", "Successfully updated rental car");
+      }
+    } catch (error) {
+      showToast("error", "Could not fetch rentalCars");
+    }
 
     // Reset form after submit
     reset({
-      vehicle: "",
+      vehicle: null,
       driversName: "",
       toDate: "",
       fromDate: "",
@@ -70,22 +93,13 @@ const BookingForm = () => {
       price: null,
     });
     clearErrors(); // Clear errors after submit
-    showToast("success", "Booking Successful");
   };
 
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
+  useEffect(() => {}, [errors]);
 
   return (
     <div className="flex flex-col items-center justify-center my-10">
-      {toast && (
-        <Toast
-          severity={toast.severity as "success" | "error" | "warning" | "info"}
-          message={toast.message}
-        />
-      )}
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+      <div className="w-full max-w-md bg-white border border-gray-100 rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Booking Form</h2>
         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
           <label
@@ -95,16 +109,18 @@ const BookingForm = () => {
             Vehicle
           </label>
           <select
-            className={`bg-gray-100 text-gray-900 border rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 ${
+            className={`bg-gray-100 text-gray-900 border rounded-lg p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150 ${
               errors.vehicle ? "border-red-500" : "border-gray-200"
             }`}
             id="vehicle"
             {...register("vehicle", { required: "Please select a vehicle." })}
           >
             <option value="">Select Vehicle</option>
-            <option value="Volvo S60">Volvo S60</option>
-            <option value="BMW X5">BMW X5</option>
-            <option value="Mercedes-Benz C-Class">Mercedes-Benz C-Class</option>
+            {rentalCars.map((car) => (
+              <option key={car.id} value={car.id}>
+                {car.name + " " + car.price + " SEK per/day"}
+              </option>
+            ))}
           </select>
           {errors?.vehicle?.message && (
             <ErrorMessage message={errors.vehicle.message} severity="error" />
@@ -118,7 +134,7 @@ const BookingForm = () => {
           </label>
           <input
             placeholder="Driver's Name"
-            className={`bg-gray-100 text-gray-900 border rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+            className={`bg-gray-100 text-gray-900 border rounded-lg p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
               errors.driversName ? "border-red-500" : "border-gray-200"
             }`}
             id="driversName"
@@ -146,7 +162,7 @@ const BookingForm = () => {
           </label>
           <input
             placeholder="The date you want to rent from"
-            className={`bg-gray-100 text-gray-900 border rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+            className={`bg-gray-100 text-gray-900 border rounded-lg p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
               errors.driversName ? "border-red-500" : "border-gray-200"
             }`}
             id="driversAge"
@@ -169,7 +185,7 @@ const BookingForm = () => {
           </label>
           <input
             placeholder="The date you want to rent from"
-            className={`bg-gray-100 text-gray-900 border rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+            className={`bg-gray-100 text-gray-900 border rounded-lg p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
               errors.driversName ? "border-red-500" : "border-gray-200"
             }`}
             id="toDate"
@@ -196,7 +212,7 @@ const BookingForm = () => {
           </label>
           <input
             placeholder="Driver's Age"
-            className={`bg-gray-100 text-gray-900 border rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+            className={`bg-gray-100 text-gray-900 border rounded-lg p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
               errors.driversName ? "border-red-500" : "border-gray-200"
             }`}
             id="driversAge"
@@ -221,7 +237,7 @@ const BookingForm = () => {
           </label>
           <input
             placeholder="0 SEK"
-            className="bg-white text-gray-900 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="bg-white text-gray-900 border-0 rounded-lg p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
             id="price"
             disabled
             {...register("price")}
@@ -229,7 +245,7 @@ const BookingForm = () => {
           />
 
           <button
-            className="bg-teal-600 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-gray-100 hover:text-teal-600 disabled:bg-gray-200 disabled:text-gray-500"
+            className="bg-teal-600 text-white font-bold py-2 px-4 rounded-lg mt-4 hover:bg-gray-100 hover:text-teal-600 disabled:bg-gray-200 disabled:text-gray-500"
             type="submit"
             // disabled={!isValid}
           >

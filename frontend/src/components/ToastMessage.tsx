@@ -24,7 +24,7 @@ const Toast: React.FC<ToastProps> = ({ severity, message }) => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="size-6"
+            className="w-6 h-6 text-teal-700"
           >
             <path
               strokeLinejoin="round"
@@ -35,20 +35,31 @@ const Toast: React.FC<ToastProps> = ({ severity, message }) => {
         );
 
       case "error":
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="size-6"
-        >
-          <path
-            strokeLinejoin="round"
-            strokeLinecap="round"
-            d="M12 2a10 10 0 100 20 10 10 0 000-20zm-1.293 13.707a1 1 0 001.414-1.414L11 12.586l1.293-1.293a1 1 0 10-1.414-1.414L10 11.172l-1.293-1.293a1 1 0 10-1.414 1.414L8.586 12l-1.293 1.293a1 1 0 001.414 1.414L10 13.414l1.293 1.293z"
-          />
-        </svg>;
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6 text-red-700"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        );
+    }
+  };
+
+  const getColor = () => {
+    switch (severity) {
+      case "success":
+        return "text-teal-700";
+      case "error":
+        return " text-red-700";
     }
   };
 
@@ -57,22 +68,22 @@ const Toast: React.FC<ToastProps> = ({ severity, message }) => {
       {visible && (
         <div
           role="alert"
-          className="rounded-xl border border-gray-100 bg-white p-4"
+          className={`rounded-xl border animate-bounce border-gray-100 shadow-lg bg-white p-4 ${getColor()}`}
         >
           <div className="flex items-start gap-4">
-            <span className="text-green-600">{getIcon()}</span>
+            <span>{getIcon()}</span>
 
             <div className="flex-1">
-              <strong className="block font-medium capitalize text-gray-900">
+              <strong className="block font-medium capitalize">
                 {severity}
               </strong>
 
-              <p className="mt-1 text-sm text-gray-700">{message}</p>
+              <p className="mt-1 text-sm">{message}</p>
             </div>
 
             <button
               onClick={() => setVisible(false)}
-              className="text-gray-500 transition hover:text-gray-600"
+              className="text-black transition hover:text-gray-600"
             >
               <span className="sr-only">Dismiss popup</span>
 
