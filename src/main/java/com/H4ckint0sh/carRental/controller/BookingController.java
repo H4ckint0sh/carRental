@@ -1,7 +1,9 @@
 package com.H4ckint0sh.carRental.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +49,22 @@ public class BookingController {
         boolean isCarAvailable = bookingService.isCarAvailableForBooking(booking.getCarId(), booking.getStartDate(), booking.getEndDate());
 
         if (!isCarAvailable) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Car is already booked within the selected dates.");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Car is already booked within the selected dates.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
         }
 
         Booking createdBooking = bookingService.createBooking(booking);
-        return ResponseEntity.ok(createdBooking);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("bookingId", createdBooking.getBookingId());
+        response.put("carId", createdBooking.getCarId());
+        response.put("bookingPrice", createdBooking.getBookingPrice());
+        response.put("bookedBy", createdBooking.getBookedBy());
+        response.put("bookedFrom", createdBooking.getBookedFrom());
+        response.put("bookedTo", createdBooking.getBookedTo());
+
+        return ResponseEntity.ok(response);      
     }
 }
 

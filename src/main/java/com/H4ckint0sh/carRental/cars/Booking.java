@@ -34,7 +34,7 @@ public class Booking {
         this.bookedTo = rentedTo;
     }
 
-    public static Optional<Car> map(Object object) {
+    public static Optional<Booking> map(Object object) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'map'");
     }
