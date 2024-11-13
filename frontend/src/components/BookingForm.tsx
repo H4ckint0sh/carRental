@@ -66,7 +66,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ rentalCars }) => {
       });
       setIsLoading(false);
       if (response.status === 200) {
-        showToast("success", "Successfully updated rental car");
+        showToast("success", "Congrats! You have successfully booked a car");
       }
     } catch (error: any) {
       setIsLoading(false);
@@ -74,7 +74,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ rentalCars }) => {
         "error",
         error.response?.status === 409
           ? error.response.data.message
-          : "Some error occurred, please try again",
+          : "Oops! Something went wrong, please try again",
       );
     } finally {
       // Reset form and clear errors regardless of success or failure
@@ -111,7 +111,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ rentalCars }) => {
             })}
             className={clsx(
               `bg-gray-100 text-gray-900 border rounded-lg p-2 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500`,
-              errors.vehicle ? "border-red-500 mb-2" : "border-gray-200 mb-4",
+              errors.vehicle
+                ? "border-red-500 mb-2"
+                : "border-gray-400 border-1 mb-4",
             )}
           >
             <option value={0}>Select Vehicle</option>

@@ -47,7 +47,7 @@ const Input: React.FC<InputProps> = ({
         id={id}
         placeholder={placeholder}
         type={type}
-        className={`bg-gray-100 text-gray-900 border rounded-lg p-2 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${error ? "border-red-500" : "border-gray-200"} ${className}`}
+        className={`bg-gray-100 text-gray-900 border rounded-lg p-2 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 ${error ? "border-red-500" : "border-gray-400 border-1"} ${className}`}
         {...register}
         disabled={disabled}
         min={min}

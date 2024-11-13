@@ -1,8 +1,6 @@
-import React from "react";
-
-const Footer = (props: {}) => {
+const Footer = () => {
   return (
-    <footer className="bg-white">
+    <footer className="bg-gray-100">
       <div className="container px-4 mx-auto">
         <div className="py-6 mx-auto max-w-4xl">
           <div className="flex flex-wrap justify-center -mx-3 lg:-mx-6">
@@ -25,7 +23,7 @@ const Footer = (props: {}) => {
           </div>
         </div>
       </div>
-      <div className="border-b border-gray-100"></div>
+      <div className="border-b border-gray-300"></div>
       <div className="container px-4 mx-auto">
         <p className="py-6 text-md text-gray-500 font-medium">
           © 2024 h4ckint0sh. All rights reserved.
