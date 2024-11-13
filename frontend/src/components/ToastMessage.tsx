@@ -63,7 +63,7 @@ const Toast: React.FC<ToastProps> = ({ severity, message }) => {
   };
 
   return (
-    <div className="fixed bottom-0 right-12 top-12 z-50 m-4">
+    <div className="fixed right-12 top-12 z-50 m-4">
       {visible && (
         <div
           role="alert"

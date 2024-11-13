@@ -1,24 +1,23 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   return (
-    <footer className="bg-gray-100">
+    <footer>
       <div className="container px-4 mx-auto">
         <div className="py-6 mx-auto max-w-4xl">
           <div className="flex flex-wrap justify-center -mx-3 lg:-mx-6">
             <div className="w-full md:w-auto p-3 md:px-6">
-              <a
-                href="/"
-                className="text-gray-500 transition hover:text-gray-500/75"
-              >
+              <Link to="/" className="text-black transition hover:underline">
                 Booking
-              </a>
+              </Link>
             </div>
             <div className="w-full md:w-auto p-3 md:px-6">
-              <a
-                href="/admin"
-                className="text-gray-500 transition hover:text-gray-500/75"
+              <Link
+                to="/admin"
+                className="text-black transition hover:underline"
               >
                 Admin
-              </a>
+              </Link>
             </div>
           </div>
         </div>

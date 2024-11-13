@@ -3,6 +3,7 @@ import React from "react";
 interface ErrorMessageProps {
   message: string;
   severity: "error" | "warning" | "info" | "success";
+  id?: string;
 }
 
 const severityStyles = {
@@ -15,10 +16,13 @@ const severityStyles = {
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({
   message,
   severity,
+  id,
 }) => {
   return (
     <div className={`flex items-center mb-4 ${severityStyles[severity]}`}>
-      <p className="text-sm">{message}</p>
+      <p id={id} className="text-sm">
+        {message}
+      </p>
     </div>
   );
 };
